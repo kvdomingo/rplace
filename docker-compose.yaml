@@ -1,0 +1,36 @@
+services:
+  api:
+    build: api
+    image: kvdomingo/rplace-api
+    init: true
+    restart: unless-stopped
+    volumes:
+      - ./api:/app
+    ports:
+      - "8000:8000"
+
+  ui:
+    image: oven/bun:1.1
+    init: true
+    restart: unless-stopped
+    command:
+      - /bin/sh
+      - -c
+      - bun install && exec bun run dev
+    working_dir: /app
+    volumes:
+      - ./ui:/app
+    ports:
+      - "3000:3000"
+
+  db:
+    image: bitnami/redis:7.2.4-debian-12-r13
+    environment:
+      ALLOW_EMPTY_PASSWORD: yes
+    volumes:
+      - db-data:/bitnami/redis/data
+    ports:
+      - "6379:6379"
+
+volumes:
+  db-data:
